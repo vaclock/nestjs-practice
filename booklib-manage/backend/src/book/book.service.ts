@@ -11,8 +11,11 @@ export class BookService {
   @Inject(DbService)
   private dbService: DbService;
 
-  list() {
-    return this.dbService.read();
+  async list(name?: string) {
+    const books = await this.dbService.read();
+    return name
+      ? books.filter((book: UpdateBookDto) => book.name.includes(name))
+      : books;
   }
 
   async findById(id: number) {
@@ -36,11 +39,9 @@ export class BookService {
     return book;
   }
 
-  async update(updateBookDto: UpdateBookDto) {
+  async update(id: string, updateBookDto: UpdateBookDto) {
     const books = await this.dbService.read();
-    const foundBook = books.find(
-      (book: CreateBookDto) => book.name === updateBookDto.name,
-    );
+    const foundBook = books.find((book: UpdateBookDto) => +book.id === +id);
     if (!foundBook) throw new BadRequestException('the book is not exists');
 
     foundBook.name = updateBookDto.name;

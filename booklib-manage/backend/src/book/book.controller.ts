@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -50,8 +51,8 @@ export class BookController {
   }
 
   @Get('list')
-  list() {
-    return this.bookService.list();
+  list(@Query('name') name?: string) {
+    return this.bookService.list(name);
   }
 
   @Get(':id')
@@ -65,8 +66,8 @@ export class BookController {
   }
 
   @Put(':id')
-  update(@Body() updateBookDto: UpdateBookDto) {
-    return this.bookService.update(updateBookDto);
+  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
+    return this.bookService.update(id, updateBookDto);
   }
 
   @Delete(':id')

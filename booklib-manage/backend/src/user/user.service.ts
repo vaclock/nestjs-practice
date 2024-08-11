@@ -15,7 +15,6 @@ export class UserService {
     const foundUser = users.find(
       (u: RegisterUserDto) => u.username === user.username,
     );
-    console.log(user);
     if (foundUser) {
       throw new BadRequestException('username already exists');
     }
