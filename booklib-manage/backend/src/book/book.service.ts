@@ -13,7 +13,7 @@ export class BookService {
 
   async list(name?: string) {
     const books = await this.dbService.read();
-    return name
+    return name.trim()
       ? books.filter((book: UpdateBookDto) => book.name.includes(name))
       : books;
   }
@@ -55,12 +55,11 @@ export class BookService {
 
   async delete(id: number) {
     const books = await this.dbService.read();
-    console.log(books, id);
-    const index = books.findIndex((book: UpdateBookDto) => book.id === +id);
+    const index = books.findIndex((book: UpdateBookDto) => +book.id === +id);
     if (index === -1) {
       throw new BadRequestException('the book is not exists');
     } else {
-      books.splice(id, 1);
+      books.splice(index, 1);
     }
     await this.dbService.write(books);
     return books[index];

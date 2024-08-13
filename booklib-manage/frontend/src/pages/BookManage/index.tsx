@@ -1,15 +1,17 @@
 import { Button, Card, Form, Input, message } from "antd";
 import "./index.css";
 import { useEffect, useState } from "react";
-import { Book, list } from "../interface";
+import { Book, deleteBook, list } from "../interface";
 import { CreateBookModal } from "./CreateBookModal";
 import { UpdateBookModal } from "./UpdateBookModal";
+import { ViewBookModal } from "./ViewBookModal";
 
 
 export default function BookManage() {
   const [booklist, setBooklist] = useState([])
   const [isOpen, setIsOpen] = useState(false)
   const [updateIsOpen, setUpdateIsOpen] = useState(false)
+  const [viewIsOpen, setViewIsOpen] = useState(false)
   const [currentId, setCurrentId] = useState<string | number>('')
   const [name, setName] = useState('')
   async function fetchBookList() {
@@ -43,9 +45,16 @@ export default function BookManage() {
       isOpen={updateIsOpen}
       handleClose={() => {
         setUpdateIsOpen(false)
-        setName('')
+        setName(' ')
       }}
     ></UpdateBookModal>
+    <ViewBookModal
+      id={currentId}
+      isOpen={viewIsOpen}
+      handleClose={() => {
+        setViewIsOpen(false)
+      }}
+    ></ViewBookModal>
     <h1>图书管理系统</h1>
     <div className="content">
       <div className="book-search">
@@ -91,13 +100,39 @@ export default function BookManage() {
                <h2>{item.name}</h2>
                 <div>{item.author}</div>
                 <div className='links'>
-                    <a href="#">详情</a>
                     <a href="#" onClick={() => {
-                      if (!item?.id) return
+                      if (!item?.id) {
+                        message.error('当前图书无id')
+                        return
+                      }
+                      setCurrentId(item.id);
+                      setViewIsOpen(true)
+                    }}>详情</a>
+                    <a href="#" onClick={() => {
+                      if (!item?.id) {
+                        message.error('当前图书无id')
+                        return
+                      }
                       setCurrentId(item.id);
                       setUpdateIsOpen(true)
                     }}>编辑</a>
-                    <a href="#">删除</a>
+                    <a href="#" onClick={async () => {
+                      if (!item?.id) {
+                        message.error('当前图书无id')
+                        return
+                      }
+                      try {
+                        const res = await deleteBook(item?.id)
+                        if (res.status === 200 || res.status === 201) {
+                          message.success('删除成功')
+                          setName(' ')
+                        }
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      } catch (error: any) {
+                        message.error(error.response.data.message)
+                      }
+
+                    }}>删除</a>
                 </div>
             </Card>
           })

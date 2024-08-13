@@ -61,3 +61,7 @@ export async function update(id: number | string, data: Book) {
 export async function findBook(id: number | string) {
   return await axiosInstance.get(`/book/${id}`)
 }
+
+export async function deleteBook(id: number | string) {
+  return await axiosInstance.delete(`/book/${id}`)
+}

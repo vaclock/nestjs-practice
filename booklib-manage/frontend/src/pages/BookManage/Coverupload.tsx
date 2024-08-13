@@ -36,7 +36,7 @@ export function Coverupload(props: CoveruploadProps) {
   if (props.onChange) onChange = props.onChange
   return props.value ?
     <div>
-      <img src={`http://localhost:3000/${props.value}`} alt="cover" />
+      <img style={{width: '300px', height: '350px'}} src={`http://localhost:3000/${props.value}`} alt="cover" />
       {dragger}
     </div>
     : dragger;

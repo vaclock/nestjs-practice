@@ -1,8 +1,9 @@
-import { DatePicker, Form, Input, message, Modal } from "antd";
+import { Form, Input, message, Modal } from "antd";
 import { useForm } from "antd/es/form/Form";
 import TextArea from "antd/es/input/TextArea";
 import { Coverupload } from "./Coverupload";
-import { update } from "../interface";
+import { findBook, update } from "../interface";
+import { useEffect } from "react";
 
 interface UpdateBookModalProps {
   id: string | number;
@@ -24,16 +25,32 @@ export interface UpdateBook {
 }
 
 export function UpdateBookModal(props: UpdateBookModalProps) {
+	const id = props.id;
 
   const [form] = useForm<UpdateBook>();
+  async function getBookInfo(id: string | number) {
+		if (!id) return;
+    try {
+			const res = await findBook(id)
+			if (res.status === 201 || res.status === 200) {
+				form.setFieldsValue({
+					...res.data
+				})
+			}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        message.error(error.response.data.message)
+    }
+
+  }
+  useEffect(() => {
+    getBookInfo(id)
+  }, [id])
   const handleOk = async function() {
-    console.log('onOl')
     await form.validateFields();
     const values = form.getFieldsValue()
-    values.publishDate = values.publishDate?.format('YYYY-MM-DD HH:mm:ss')
-    console.log(values, 'values')
+    // values.publishDate = values.publishDate?.format('YYYY-MM-DD HH:mm:ss')
     try {
-      console.log(props.id, '=props.id')
       const res = await update(props.id, values)
       if (res.status === 201 || res.status === 200) {
           message.success('创建成功');
@@ -78,12 +95,6 @@ export function UpdateBookModal(props: UpdateBookModalProps) {
               ]}
           >
               <TextArea/>
-          </Form.Item>
-          <Form.Item
-              label="出版时间"
-              name="publishDate"
-          >
-              <DatePicker format="YYYY-MM-DD HH:mm:ss"></DatePicker>
           </Form.Item>
           <Form.Item
               label="封面"
