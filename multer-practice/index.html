@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <input type="file" id="uploadFiles" multiple>
+  <script>
+    const uploadFiles = document.getElementById('uploadFiles');
+
+    uploadFiles.onchange = function () {
+      const formData = new FormData();
+      formData.set('name', 'jack')
+      formData.set('age', 12)
+      console.log(this.files, 'files')
+
+      // formData.append('file', this.files[0])
+      // axios.post('http://localhost:3333/upload', formData)
+
+      // formData.append('files', this.files[0])
+      // formData.append('files', this.files[1])
+      // axios.post('http://localhost:3333/upload-multi', formData)
+
+      // /upload-multi-field
+      // formData.append('file1', this.files[0])
+      // formData.append('file2', this.files[1])
+      // axios.post('http://localhost:3333/upload-multi-field', formData)
+
+      formData.append('anything', this.files[0])
+      axios.post('http://localhost:3333/upload-optional', formData)
+    }
+  </script>
+</body>
+
+</html>
