@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+</head>
+<body>
+  <!-- <input type="file" multiple id="uploadInput" />
+  <script>
+    const uploadInput = document.getElementById('uploadInput');
+    uploadInput.onchange = async function() {
+      const formData = new FormData();
+      formData.set('title', 'this is a test');
+      formData.set('source', 'client');
+      [...uploadInput.files].forEach(file => {
+        formData.append('files', file)
+      });
+      const res = await axios.post('http://localhost:3000/upload', formData)
+      console.log(res);
+    }
+  </script> -->
+  <input type="file" id="uploadInput" />
+  <script>
+    const uploadInput = document.getElementById('uploadInput');
+    const chunkSize = 20 * 1024; // 20k
+    uploadInput.onchange = async function() {
+      const chunks = []
+      const file = uploadInput.files[0];
+      let startPos = 0
+      while (startPos < file.size) {
+        chunks.push(file.slice(startPos, startPos + chunkSize))
+        startPos += chunkSize;
+      }
+
+      const randomStr = Math.random().toString(36).substring(2, 15)
+      const tasks = []
+      chunks.forEach((chunk, index) => {
+        const formData = new FormData();
+        formData.set('name', randomStr + '_' + file.name + '-' + index);
+        formData.append('files', chunk)
+        tasks.push(axios.post('http://localhost:3000/upload', formData))
+      })
+
+      await Promise.all(tasks)
+      axios.get(`http://localhost:3000/merge?name=${randomStr + '_' + file.name }`)
+    }
+  </script>
+</body>
+</html>
